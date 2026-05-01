@@ -1,0 +1,142 @@
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+}
+
+/* ===== AUTH ===== */
+
+.auth-container {
+    width: 320px;
+    margin: 120px auto;
+    padding: 30px;
+    background: #1e293b;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.auth-container h2 {
+    text-align: center;
+}
+
+.auth-container input {
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background: #334155;
+    color: white;
+}
+
+.auth-container button {
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background: #3b82f6;
+    color: white;
+    cursor: pointer;
+}
+
+.link {
+    text-align: center;
+    font-size: 14px;
+    cursor: pointer;
+    color: #60a5fa;
+}
+
+/* ===== APP ===== */
+
+.app {
+    display: flex;
+    height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 320px;
+    background: #020617;
+    border-right: 1px solid #1e293b;
+    display: flex;
+    flex-direction: column;
+}
+
+.dialog {
+    padding: 12px;
+    border-bottom: 1px solid #1e293b;
+    cursor: pointer;
+}
+
+.dialog:hover {
+    background: #1e293b;
+}
+
+/* CHAT */
+.chat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#chat-header {
+    padding: 15px;
+    border-bottom: 1px solid #1e293b;
+}
+
+#messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+/* MESSAGES */
+.msg {
+    padding: 10px;
+    border-radius: 10px;
+    margin: 6px 0;
+    max-width: 60%;
+    background: #334155;
+}
+
+.msg.me {
+    margin-left: auto;
+    background: #3b82f6;
+}
+
+/* INPUT */
+.input-area {
+    display: none;
+    padding: 10px;
+    border-top: 1px solid #1e293b;
+}
+
+.input-area.active {
+    display: flex;
+}
+
+input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    background: #1e293b;
+    color: white;
+}
+
+button {
+    margin-left: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: none;
+    background: #3b82f6;
+    color: white;
+    cursor: pointer;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100px;
+    }
+}

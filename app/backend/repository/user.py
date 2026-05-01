@@ -1,6 +1,6 @@
-from app.auth.security import get_password_hash, verify_password
-from app.models.user import User
-from app.schemas.user import UserCreate, UserLogin
+from app.backend.core.security import security
+from app.backend.models.user import User
+from app.backend.schemas.user import UserCreate, UserLogin
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -22,7 +22,7 @@ class Repository:
                           session: AsyncSession):
         user = User(
             email = user_data.email,
-            password_hash = get_password_hash(user_data.password),
+            password_hash = security.get_password_hash(user_data.password),
             first_name = user_data.first_name,
             last_name = user_data.last_name
         )
@@ -37,6 +37,6 @@ class Repository:
                         user_data: UserLogin,
                         session: AsyncSession):
         user = await cls.find_user(session, email=user_data.email)
-        if not user or not verify_password(user_data.password, user.password_hash):
+        if not user or not security.verify_password(user_data.password, user.password_hash):
             return None
         return user

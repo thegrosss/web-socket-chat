@@ -9,3 +9,7 @@ class UserCreate(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+class UserSearch(BaseModel):
+    first_name: str | None = None
+    last_name: str | None = None

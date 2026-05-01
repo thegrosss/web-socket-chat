@@ -1,14 +1,14 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from contextlib import asynccontextmanager
+from app.backend.core.database import Base, engine
+from app.backend.api.router_page import router as router_page
+from app.backend.api.websocket import router as router_websocket
+from app.backend.api.user import router as user_router
+from app.backend.api.dialogs import router as dialog_router
 
-from app.core.database import Base, engine
-from app.api.router_page import router as router_page
-from app.api.router_socket import router as router_socket
-from app.api.user import router as user_router
-
-import uvicorn
 
 async def create_tables():
     async with engine.begin() as conn:
@@ -28,8 +28,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+app.mount("/static", StaticFiles(directory="app/frontend/static"), name="static")
 
 app.include_router(router_page)
-app.include_router(router_socket)
+app.include_router(router_websocket)
 app.include_router(user_router)
+app.include_router(dialog_router)

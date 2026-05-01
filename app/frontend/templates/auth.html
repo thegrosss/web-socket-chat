@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Auth</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-900 flex items-center justify-center h-screen">
+
+<div class="bg-slate-800 p-8 rounded-2xl w-80 shadow-lg">
+    <h2 class="text-white text-xl mb-4 text-center">Login</h2>
+
+    <input id="email" class="w-full mb-3 p-2 rounded bg-slate-700 text-white" placeholder="Email">
+    <input id="password" type="password" class="w-full mb-4 p-2 rounded bg-slate-700 text-white" placeholder="Password">
+
+    <button onclick="login()" class="w-full bg-blue-500 hover:bg-blue-600 text-white p-2 rounded">
+        Login
+    </button>
+
+    <p onclick="goRegister()" class="text-blue-400 text-center mt-4 cursor-pointer">
+        No account? Register
+    </p>
+</div>
+
+<script src="/static/js/auth.js"></script>
+
+</body>
+</html>

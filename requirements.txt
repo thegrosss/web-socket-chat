@@ -1,4 +1,5 @@
 fastapi~=0.136.1
+starlette==0.38.6
 Jinja2~=3.1.6
 SQLAlchemy~=2.0.49
 authx~=1.5.2
