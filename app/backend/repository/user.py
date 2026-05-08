@@ -21,10 +21,11 @@ class Repository:
                           user_data: UserCreate,
                           session: AsyncSession):
         user = User(
-            email = user_data.email,
-            password_hash = security.get_password_hash(user_data.password),
-            first_name = user_data.first_name,
-            last_name = user_data.last_name
+            email=user_data.email,
+            password_hash=security.get_password_hash(user_data.password),
+            first_name=user_data.first_name or "",
+            last_name=user_data.last_name or "",
+            username=user_data.username,
         )
 
         session.add(user)

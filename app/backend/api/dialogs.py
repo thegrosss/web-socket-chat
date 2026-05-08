@@ -11,6 +11,29 @@ from app.backend.repository.user import Repository as UserRepository
 router = APIRouter(prefix="/dialogs", tags=["dialogs"])
 
 
+def serialize_attachment(attachment) -> dict:
+    return {
+        "id": attachment.id,
+        "url": attachment.file_url,
+        "name": attachment.file_name,
+        "type": attachment.file_type,
+        "content_type": attachment.mime_type,
+        "size": attachment.file_size,
+    }
+
+
+def message_preview(message: Message) -> str:
+    if message.content:
+        return message.content
+    if any(attachment.file_type == "image" for attachment in message.attachments):
+        return "Фото"
+    if any(attachment.file_type == "video" for attachment in message.attachments):
+        return "Видео"
+    if message.attachments:
+        return "Файл"
+    return ""
+
+
 @router.get("/")
 async def get_dialogs(
         user_id: int = Depends(security.get_current_user),
@@ -24,25 +47,22 @@ async def get_dialogs(
                 Message.receiver_id == user_id
             )
         )
-        .options(selectinload(Message.sender), selectinload(Message.receiver))
-        # 🔥 Сортируем строго по ID (старые первые, новые в конце)
+        .options(selectinload(Message.sender), selectinload(Message.receiver), selectinload(Message.attachments))
         .order_by(Message.id.asc())
     )
     messages = result.scalars().all()
 
     dialogs = {}
     for m in messages:
-        # Определяем собеседника
         other_user = m.receiver if m.sender_id == user_id else m.sender
 
-        # Так как идем от старых к новым, последнее сообщение гарантированно ПЕРЕЗАПИШЕТ старые
         dialogs[other_user.id] = {
             "user": other_user,
-            "last_msg": m.content,
-            "msg_id": m.id  # Сохраняем ID сообщения для сортировки списка
+            "last_msg": message_preview(m),
+            "last_msg_created_at": m.created_at,
+            "msg_id": m.id
         }
 
-    # 🔥 Сортируем сами чаты так, чтобы сверху был тот, у которого ID сообщения больше
     sorted_dialogs = sorted(dialogs.values(), key=lambda x: x["msg_id"], reverse=True)
 
     return [
@@ -50,7 +70,10 @@ async def get_dialogs(
             "user_id": d["user"].id,
             "first_name": d["user"].first_name,
             "last_name": d["user"].last_name,
-            "last_message": d["last_msg"]
+            "username": d["user"].username,
+            "avatar_url": d["user"].avatar_url,
+            "last_message": d["last_msg"],
+            "last_message_created_at": d["last_msg_created_at"].isoformat() if d["last_msg_created_at"] else None,
         }
         for d in sorted_dialogs
     ]
@@ -74,6 +97,7 @@ async def get_messages(
                 and_(Message.sender_id == other_user_id, Message.receiver_id == user_id)
             )
         )
+        .options(selectinload(Message.attachments))
         .order_by(Message.created_at.desc())
         .offset(offset)
     )
@@ -82,7 +106,9 @@ async def get_messages(
         "user": {
             "id": other_user.id,
             "first_name": other_user.first_name,
-            "last_name": other_user.last_name
+            "last_name": other_user.last_name,
+            "username": other_user.username,
+            "avatar_url": other_user.avatar_url,
         },
         "messages": [
             {
@@ -90,7 +116,8 @@ async def get_messages(
                 "sender_id": msg.sender_id,
                 "content": msg.content,
                 "created_at": msg.created_at,
-                "is_read": msg.is_read
+                "is_read": msg.is_read,
+                "attachments": [serialize_attachment(attachment) for attachment in msg.attachments],
             }
             for msg in sorted(messages, key=lambda x: x.created_at)
         ]

@@ -42,7 +42,6 @@ function updateConnectionStatus(status, color) {
 }
 
 function connectWebSocket() {
-    // Формируем WebSocket URL
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${window.location.host}/chat/${roomId}/${userId}?username=${encodeURIComponent(username)}`;
 
@@ -65,7 +64,6 @@ function connectWebSocket() {
         messageInput.disabled = false;
         reconnectAttempts = 0;
 
-        // Отправляем сообщения из очереди
         while (messageQueue.length > 0) {
             const msg = messageQueue.shift();
             ws.send(msg);
@@ -126,14 +124,12 @@ messageForm.addEventListener('submit', (e) => {
         ws.send(message);
         sendButton.disabled = true;
     } else if (!isConnected) {
-        // Сохраняем в очередь, если нет подключения
         messageQueue.push(message);
         messageInput.value = '';
         addMessage('Сообщение будет отправлено после подключения...', true, true);
     }
 });
 
-// Обработка фокуса на мобильных устройствах
 messageInput.addEventListener('focus', () => {
     setTimeout(scrollToBottom, 300);
 });
@@ -151,7 +147,6 @@ window.addEventListener('beforeunload', () => {
     }
 });
 
-// Переподключение при возвращении на вкладку
 document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && (!ws || ws.readyState !== WebSocket.OPEN)) {
         connectWebSocket();

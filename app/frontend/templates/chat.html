@@ -2,68 +2,157 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Messenger</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gray-100 font-sans h-screen overflow-hidden">
-
-<div class="flex h-full w-full max-w-7xl mx-auto shadow-2xl bg-white relative">
-
-    <!-- Сайдбар (Слева) -->
-    <div class="w-1/3 min-w-[320px] max-w-[400px] border-r border-gray-200 flex flex-col bg-white">
-        <!-- Шапка сайдбара -->
-        <div class="h-16 bg-gray-50 flex items-center justify-between px-4 border-b border-gray-200">
-            <h1 class="text-xl font-bold text-gray-800">Чаты</h1>
-            <button onclick="logout()" class="text-gray-500 hover:text-red-500 transition"><i class="fas fa-sign-out-alt text-lg"></i></button>
-        </div>
-
-        <!-- Поиск -->
-        <div class="p-3 border-b border-gray-100 relative">
-            <input id="search" onkeyup="searchUsers()" type="text" placeholder="Поиск пользователей..."
-                   class="w-full bg-gray-100 text-gray-700 rounded-full py-2 pl-4 pr-10 outline-none focus:ring-2 focus:ring-blue-400">
-            <i class="fas fa-search absolute right-6 top-5 text-gray-400"></i>
-        </div>
-
-        <!-- Результаты поиска (выпадающее окно) -->
-        <div id="users" class="hidden absolute top-[120px] left-0 w-[320px] max-h-60 overflow-y-auto bg-white shadow-xl z-10 border border-gray-100 rounded-b-lg"></div>
-
-        <!-- Список диалогов -->
-        <div id="dialogs" class="flex-1 overflow-y-auto bg-white">
-            <!-- Диалоги будут добавляться сюда JS-кодом -->
-        </div>
-    </div>
-
-    <!-- Основной чат (Справа) -->
-    <div class="flex-1 flex flex-col bg-[#efeae2] relative">
-        <!-- Заглушка, когда чат не выбран -->
-        <div id="empty-chat" class="absolute inset-0 flex items-center justify-center bg-[#f0f2f5] z-10">
-            <div class="bg-white px-6 py-2 rounded-full shadow-sm text-gray-500">Выберите диалог для начала общения</div>
-        </div>
-
-        <!-- Шапка открытого чата -->
-        <div id="chat-header" class="h-16 bg-gray-50 border-b border-gray-200 flex items-center px-6 invisible">
-            <div id="chat-avatar" class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4 shadow-inner"></div>
-            <div class="flex flex-col">
-                <div id="chat-title" class="font-semibold text-gray-800 text-lg leading-tight"></div>
-                <div id="chat-status" class="text-sm font-medium transition-colors"></div>
+<body class="messenger-page">
+<div class="app-shell">
+    <aside class="sidebar">
+        <header class="sidebar-header">
+            <div>
+                <p class="sidebar-kicker">TeleMAX</p>
+                <h1>Чаты</h1>
             </div>
-        </div>
+            <div class="header-actions">
+                <button class="icon-button" type="button" title="Профиль" aria-label="Профиль" onclick="openProfileModal()">
+                    <i class="fas fa-user"></i>
+                </button>
+                <button class="icon-button danger" type="button" title="Выйти" aria-label="Выйти" onclick="logout()">
+                    <i class="fas fa-arrow-right-from-bracket"></i>
+                </button>
+            </div>
+        </header>
 
+        <button class="search-entry" type="button" onclick="openSearchModal()">
+            <i class="fas fa-magnifying-glass"></i>
+            <span>Найти людей</span>
+        </button>
 
-        <!-- Сообщения -->
-        <div id="messages" class="flex-1 overflow-y-auto p-6 flex flex-col gap-3"></div>
+        <div id="dialogs" class="dialogs-list"></div>
+    </aside>
 
-        <!-- Поле ввода -->
-        <div id="input-area" class="h-20 bg-gray-50 border-t border-gray-200 flex items-center px-4 invisible">
-            <input id="message-input" onkeypress="handleEnter(event)" oninput="handleTyping()" type="text" placeholder="Написать сообщение..." class="flex-1 bg-white border border-gray-300 rounded-full py-3 px-5 outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400">
+    <main class="chat-panel">
+        <section id="empty-chat" class="empty-chat">
+            <div class="empty-chat-mark"><i class="fas fa-comments"></i></div>
+            <p>Выберите диалог</p>
+        </section>
 
-            <button onclick="sendMessage()" class="ml-3 w-12 h-12 bg-blue-500 hover:bg-blue-600 rounded-full text-white flex items-center justify-center transition shadow-md">
-                <i class="fas fa-paper-plane"></i>
+        <header id="chat-header" class="chat-header hidden-panel">
+            <button class="icon-button mobile-back" type="button" title="Назад" aria-label="Назад" onclick="closeMobileChat()">
+                <i class="fas fa-chevron-left"></i>
             </button>
-        </div>
+            <div id="chat-avatar" class="avatar avatar-lg profile-clickable" role="button" tabindex="0" onclick="viewUserProfile(currentChat)" onkeydown="handleProfileKey(event, currentChat)"></div>
+            <div class="chat-title-block profile-clickable" role="button" tabindex="0" onclick="viewUserProfile(currentChat)" onkeydown="handleProfileKey(event, currentChat)">
+                <h2 id="chat-title"></h2>
+                <p id="chat-username" class="chat-username"></p>
+                <p id="chat-status" class="chat-status"></p>
+            </div>
+        </header>
 
-    </div>
+        <div id="messages" class="messages-list"></div>
+
+        <footer id="input-area" class="composer hidden-panel">
+            <div id="attachment-preview" class="attachment-preview hidden-panel"></div>
+            <div class="composer-row">
+                <input id="file-input" type="file" multiple onchange="handleFilesSelected(event)" hidden>
+                <button class="icon-button attach-button" type="button" title="Прикрепить" aria-label="Прикрепить" onclick="document.getElementById('file-input').click()">
+                    <i class="fas fa-paperclip"></i>
+                </button>
+                <textarea id="message-input" rows="1" placeholder="Сообщение" onkeydown="handleEnter(event)" oninput="handleTyping(); autoResizeMessageInput()"></textarea>
+                <button class="icon-button send-button" type="button" title="Отправить" aria-label="Отправить" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </footer>
+    </main>
+</div>
+
+<div id="user-profile-modal" class="modal hidden-panel" onclick="closeModalOnBackdrop(event, 'user-profile-modal')">
+    <section class="modal-card public-profile-card">
+        <header class="modal-header">
+            <h2>Профиль</h2>
+            <button class="icon-button" type="button" title="Закрыть" aria-label="Закрыть" onclick="closeUserProfileModal()">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </header>
+        <div id="user-profile-content" class="public-profile-content"></div>
+    </section>
+</div>
+
+<div id="search-modal" class="modal hidden-panel" onclick="closeModalOnBackdrop(event, 'search-modal')">
+    <section class="modal-card search-modal-card">
+        <header class="modal-header">
+            <h2>Поиск людей</h2>
+            <button class="icon-button" type="button" title="Закрыть" aria-label="Закрыть" onclick="closeSearchModal()">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </header>
+        <div class="search-modal-input">
+            <i class="fas fa-magnifying-glass"></i>
+            <input id="person-search" type="text" placeholder="Имя или @аккаунт" oninput="searchUsers()">
+        </div>
+        <div id="users" class="search-results"></div>
+    </section>
+</div>
+
+<div id="profile-modal" class="modal hidden-panel" onclick="closeModalOnBackdrop(event, 'profile-modal')">
+    <section class="modal-card profile-modal-card">
+        <header class="modal-header">
+            <h2>Профиль</h2>
+            <button class="icon-button" type="button" title="Закрыть" aria-label="Закрыть" onclick="closeProfileModal()">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </header>
+
+        <form id="profile-form" class="profile-form" onsubmit="saveProfile(event)">
+            <div class="profile-avatar-row">
+                <div id="profile-avatar-preview" class="avatar avatar-xl"></div>
+                <label class="avatar-upload">
+                    <input id="profile-avatar-input" name="avatar" type="file" accept="image/*" onchange="previewProfileAvatar(event)" hidden>
+                    <i class="fas fa-camera"></i>
+                    <span>Аватар</span>
+                </label>
+            </div>
+
+            <div class="form-grid">
+                <label>
+                    <span>Имя</span>
+                    <input id="profile-first-name" name="first_name" autocomplete="given-name">
+                </label>
+                <label>
+                    <span>Фамилия</span>
+                    <input id="profile-last-name" name="last_name" autocomplete="family-name">
+                </label>
+            </div>
+
+            <label>
+                <span>Аккаунт</span>
+                <div class="username-field">
+                    <span>@</span>
+                    <input id="profile-username" name="username" autocomplete="username" placeholder="username">
+                </div>
+            </label>
+
+            <label>
+                <span>Дата рождения</span>
+                <input id="profile-birth-date" name="birth_date" type="date">
+            </label>
+
+            <label>
+                <span>О себе</span>
+                <textarea id="profile-bio" name="bio" rows="4"></textarea>
+            </label>
+
+            <p id="profile-message" class="form-message"></p>
+
+            <button class="primary-action" type="submit">
+                <span>Сохранить</span>
+                <i class="fas fa-check"></i>
+            </button>
+        </form>
+    </section>
 </div>
 
 <script src="/static/js/chat.js"></script>

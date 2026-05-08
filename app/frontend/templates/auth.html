@@ -1,30 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Auth</title>
-
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+<body class="auth-page">
+<main class="auth-layout">
+    <section class="auth-panel">
+        <div class="auth-brand">
+            <div class="auth-logo">
+                <img src="static/img/logo.png">
+            </div>
+            <div>
+                <p class="auth-kicker">TeleMAX</p>
+                <h1>Вход</h1>
+            </div>
+        </div>
 
-<body class="bg-slate-900 flex items-center justify-center h-screen">
+        <form class="auth-form" onsubmit="login(event)">
+            <label>
+                <span>Email</span>
+                <input id="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+            </label>
+            <label>
+                <span>Пароль</span>
+                <input id="password" type="password" autocomplete="current-password" placeholder="••••••••" required>
+            </label>
 
-<div class="bg-slate-800 p-8 rounded-2xl w-80 shadow-lg">
-    <h2 class="text-white text-xl mb-4 text-center">Login</h2>
+            <p id="auth-message" class="form-message"></p>
 
-    <input id="email" class="w-full mb-3 p-2 rounded bg-slate-700 text-white" placeholder="Email">
-    <input id="password" type="password" class="w-full mb-4 p-2 rounded bg-slate-700 text-white" placeholder="Password">
+            <button class="primary-action" type="submit">
+                <span>Войти</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </form>
 
-    <button onclick="login()" class="w-full bg-blue-500 hover:bg-blue-600 text-white p-2 rounded">
-        Login
-    </button>
-
-    <p onclick="goRegister()" class="text-blue-400 text-center mt-4 cursor-pointer">
-        No account? Register
-    </p>
-</div>
+        <button class="plain-link" type="button" onclick="goRegister()">Создать аккаунт</button>
+    </section>
+</main>
 
 <script src="/static/js/auth.js"></script>
-
 </body>
 </html>

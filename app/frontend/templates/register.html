@@ -1,32 +1,64 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Register</title>
-
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+<body class="auth-page">
+<main class="auth-layout">
+    <section class="auth-panel auth-panel-wide">
+        <div class="auth-brand">
+            <div class="auth-logo">
+                <img src="static/img/logo.png">
+            </div>
+            <div>
+                <p class="auth-kicker">TeleMAX</p>
+                <h1>Регистрация</h1>
+            </div>
+        </div>
 
-<body class="bg-slate-900 flex items-center justify-center h-screen">
+        <form class="auth-form" onsubmit="register(event)">
+            <label>
+                <span>Email</span>
+                <input id="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+            </label>
+            <label>
+                <span>Пароль</span>
+                <input id="password" type="password" autocomplete="new-password" placeholder="••••••••" required>
+            </label>
+            <div class="form-grid">
+                <label>
+                    <span>Имя</span>
+                    <input id="first_name" autocomplete="given-name" placeholder="Имя">
+                </label>
+                <label>
+                    <span>Фамилия</span>
+                    <input id="last_name" autocomplete="family-name" placeholder="Фамилия">
+                </label>
+            </div>
+            <label>
+                <span>Аккаунт</span>
+                <div class="username-field">
+                    <span>@</span>
+                    <input id="username" autocomplete="username" placeholder="username">
+                </div>
+            </label>
 
-<div class="bg-slate-800 p-8 rounded-2xl w-80 shadow-lg">
-    <h2 class="text-white text-xl mb-4 text-center">Register</h2>
+            <p id="auth-message" class="form-message"></p>
 
-    <input id="email" class="w-full mb-2 p-2 rounded bg-slate-700 text-white" placeholder="Email">
-    <input id="password" type="password" class="w-full mb-2 p-2 rounded bg-slate-700 text-white" placeholder="Password">
-    <input id="first_name" class="w-full mb-2 p-2 rounded bg-slate-700 text-white" placeholder="First name">
-    <input id="last_name" class="w-full mb-4 p-2 rounded bg-slate-700 text-white" placeholder="Last name">
+            <button class="primary-action" type="submit">
+                <span>Зарегистрироваться</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </form>
 
-    <button onclick="register()" class="w-full bg-green-500 hover:bg-green-600 text-white p-2 rounded">
-        Register
-    </button>
-
-    <p onclick="goLogin()" class="text-blue-400 text-center mt-4 cursor-pointer">
-        Back to login
-    </p>
-</div>
+        <button class="plain-link" type="button" onclick="goLogin()">Уже есть аккаунт</button>
+    </section>
+</main>
 
 <script src="/static/js/auth.js"></script>
-
 </body>
 </html>
